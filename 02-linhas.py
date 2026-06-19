@@ -28,6 +28,8 @@ def desenhar():
 #******* MAIN *******#
 
 # Todas as linhas desenhadas são armazenadas aqui
+retangulo = []
+circulo = []
 linhas = []
 
 root = Tk()
