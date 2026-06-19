@@ -1,4 +1,12 @@
 from tkinter import *
+import tkinter as tk
+from tkinte import ttk
+
+janela = tk.Tk()
+
+texto=tk.Label(janela, text=" figuras e desenhos")
+texto.pack()
+root.geometry("300x250")
 
 # Quando o mouse é pressionado
 def inicia_linha(event):
@@ -8,21 +16,35 @@ def inicia_linha(event):
 
 # Quando o mouse é movido com o botão pressionado
 def atualiza_linha(event):
-    global fim_x, fim_y
+    global fim_x, fim_y,raio
     fim_x = event.x
     fim_y = event.y
     desenhar()
+    raio=()
+    canvas.create_oval(ini_x-raio, ini_y-raio, ini_x+raio, ini_y+raio)
     canvas.create_line(ini_x, ini_y, fim_x, fim_y)
+
 
 # Quando o mouse é solto
 def incluir_linha(event):
     linhas.append((ini_x, ini_y, fim_x, fim_y))
+# retangulo
+def incluir_retangulo(event):
+    retangulo.append(())
+# circulo 
+def incluir_circulo(event):
+    circulo.append(())
 
+# criação de linha
 def desenhar():
     canvas.delete("all")
     for linha in linhas:
         canvas.create_line(linha[0], linha[1], linha[2], linha[3])
 
+def desenhar():
+    canvas.delete("all")
+    for retangul in retangulo:
+        canvas.creative.rectangle()
 
 
 #******* MAIN *******#

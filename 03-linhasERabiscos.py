@@ -1,5 +1,11 @@
 from tkinter import *
 from tkinter import ttk
+import tkinter as tk
+
+janela = tk.Tk()
+
+texto =tk.Label(janela, text="desenhos e figuras")
+texto.pack()
 
 # Quando mouse é pressionado
 def iniciar_figura_nova(event): 
@@ -29,6 +35,8 @@ def atualizar_figura_nova(event):
 def incluir_figura_nova(event): 
     if not incompleta(figura_nova): # para evitar incluir figuras incompletas, como uma linha sem comprimento ou um rabisco com um único ponto
         figuras.append(figura_nova) 
+        circulo.append(figuras_nova)
+        retangulo.append(figuras_nova)
     desenhar_figuras()
 
 def desenhar_figuras():
@@ -40,6 +48,8 @@ def desenhar_figuras():
             canvas.create_oval(values[0] - values[2], values[1] - values[2], values[0] + values[2], values[1] + values[2])
         elif fig == "rabisco":
             canvas.create_line(values)
+        elif fig == "retangulo":
+             canvas.create_rectangle()
 
 def desenhar_figura_nova():
     fig, values = figura_nova
@@ -49,6 +59,8 @@ def desenhar_figura_nova():
         canvas.create_oval(values[0] - values[2], values[1] - values[2], values[0] + values[2], values[1] + values[2], dash=(4, 2))
     elif fig == "rabisco": # fig == "rabisco"
         canvas.create_line(values, dash=(4, 2))
+    elif fig == "retangulo":
+        canvas.create_rectangle(values,)
 
 def incompleta(figura):
     fig, values = figura
@@ -58,12 +70,21 @@ def incompleta(figura):
         return values[2] == 0
     elif fig == "rabisco":
         return len(values) <= 1
+    elif fig == "retangulo":
+        return 
+
+ # escolhar da cor       
+def color_fig(event):
+    global color
 
 
 
 
 #******* MAIN *******#
 
+oval = []         # desenho oval
+retangulo = []    # desenho retangulo
+circulo = []      # desenho circular
 figuras = []       # Todas as figuras desenhadas
 figura_nova = None # Figura que está sendo desenhada, mas ainda não foi incluída em figuras
 raio = None       # Variável global para armazenar o raio do círculo que está sendo desenhado, para que ele possa ser atualizado conforme o mouse é movido
@@ -81,8 +102,9 @@ label.grid(column=0, row=0, sticky=W, **paddings)
 # option menu
 tipo_figura_var = StringVar(root) # Guarda o tipo de figura selecionado no option menu (linha ou rabisco)
 option_menu = ttk.OptionMenu(frame, tipo_figura_var,
-                             'Linha', 'Linha', 'Rabisco', 'Circulo')
-option_menu.grid(column=1, row=0, sticky=W, **paddings)
+                             'Linha', 'Linha', 'Rabisco', 'Circulo' , 'retangulo' , 'oval')
+option_menu.grid(column=2, row=0, sticky=W, **paddings)
+button=tk.button(janela,whidth='blue',command='')
 
 # Área de desenho
 canvas = Canvas(frame, bg='white', width=600, height=600)
