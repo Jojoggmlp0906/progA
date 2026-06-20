@@ -9,7 +9,7 @@ texto.pack()
 # Quando mouse é pressionado
 def iniciar_figura_nova(event): 
     global figura_nova, raio
-    raio = 0.0 # o raio começa em 0, e vai aumentando conforme o mouse é movido
+    raio = 0 # o raio começa em 0, e vai aumentando conforme o mouse é movido
     if tipo_figura_var.get() == 'Linha':
         figura_nova = ("linha", (event.x, event.y, event.x, event.y))
     elif tipo_figura_var.get() == 'Rabisco':
@@ -23,13 +23,14 @@ def iniciar_figura_nova(event):
 # Quando mouse é movido com o botão pressionado
 def atualizar_figura_nova(event):
     global figura_nova, raio
-    raio = ((event.x - event.x)**2 + (event.y - event.y)**2)**0.5
+    x_ini, y_ini = figura_nova[1][0], figura_nova[1][1] # coordenadas do ponto inicial da figura, que é o mesmo para linha, círculo, retângulo e oval
     if figura_nova[0] == "rabisco":
         figura_nova[1].append((event.x, event.y))
     elif figura_nova[0] == "linha":
         figura_nova = ("linha", (figura_nova[1][0], figura_nova[1][1], event.x, event.y))
     elif figura_nova[0] == "circulo":
-        figura_nova = ("circulo", (figura_nova[1][0], figura_nova[1][1], raio))
+        raio = ((event.x - x_ini)**2 + (event.y - y_ini)**2)**0.5
+        figura_nova = ("circulo", (x_ini, y_ini, raio))
     elif figura_nova[0] == "retangulo":
         figura_nova = ("retangulo", (figura_nova[1][0], figura_nova[1][1], event.x, event.y))
     elif figura_nova[0] == "oval":
@@ -47,6 +48,10 @@ def incluir_figura_nova(event):
     desenhar_figuras()
 
 def desenhar_figuras():
+    global x_inicial, y_inicial, raio
+    x_inicial = figura_nova[1][0] # coordenada x do ponto inicial da figura, que é o mesmo para linha, círculo, retângulo e oval
+    y_inicial = figura_nova[1][1] # coordenada y do ponto
+    raio = figura_nova[1][2] # raio do círculo
     canvas.delete("all")
     for fig, values in figuras:
         if fig == "linha":
@@ -70,7 +75,8 @@ def desenhar_figura_nova():
         canvas.create_line(values, dash=(4, 2))
     elif fig == "retangulo":
         canvas.create_rectangle(values[0], values[1], values[2], values[3], dash=(4, 2))
-
+    elif fig == "oval":
+        canvas.create_oval(values[0], values[1], values[2], values[3], dash=(4, 2))
 def incompleta(figura):
     fig, values = figura
     if fig == "linha":
