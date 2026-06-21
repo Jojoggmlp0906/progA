@@ -136,11 +136,11 @@ option_menu.grid(column=2, row=0, sticky=W, **paddings)
 tipo_cor_var1 = StringVar(janela)
 option_menu2 = ttk.OptionMenu(frame, tipo_cor_var1,'selecionar cor da borda',
                               'Blue','Red','Green','Yellow','Purple', command=mudar_cor_fig2)
-option_menu.grid(column=1,row=0,sticky=W,**paddings)
+option_menu.grid(column=4,row=0,sticky=W,**paddings)
 
 # Área de desenho
 canvas = Canvas(frame, bg='white', width=600, height=600)
-canvas.grid(column=0, row=1, columnspan=2, sticky=W, **paddings)
+canvas.grid(column=0, row=1, columnspan=30, sticky=W, **paddings)
 
 frame.pack()
 
