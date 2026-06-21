@@ -124,7 +124,7 @@ paddings = {'padx': 5, 'pady': 5}
 tipo_figura_var = StringVar(janela) # Guarda o tipo de figura selecionado no option menu (linha ou rabisco)
 option_menu = ttk.OptionMenu(frame, tipo_figura_var,'Linha',
                              'Linha', 'Rabisco', 'Circulo' , 'Retangulo' , 'Oval')
-option_menu.grid(column=2, row=0, sticky=W, **paddings)
+option_menu.grid(column=3, row=0, sticky=W, **paddings)
 
 
  
@@ -136,7 +136,7 @@ option_menu.grid(column=2, row=0, sticky=W, **paddings)
 tipo_cor_var1 = StringVar(janela)
 option_menu2 = ttk.OptionMenu(frame, tipo_cor_var1,'selecionar cor da borda',
                               'Blue','Red','Green','Yellow','Purple', command=mudar_cor_fig2)
-option_menu.grid(column=4,row=0,sticky=W,**paddings)
+option_menu.grid(column=5,row=0,sticky=W,**paddings)
 
 # Área de desenho
 canvas = Canvas(frame, bg='white', width=600, height=600)
