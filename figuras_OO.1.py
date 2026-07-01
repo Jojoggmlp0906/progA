@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import tkinter as tk
 from tkinter import Canvas, Frame, StringVar, ttk
-
+# janela do programa
 janela = tk.Tk()
 janela.title("Desenhos e figuras")
 janela.geometry("700x700")
 cor_atual = "black"
 
+# classe figura
 class Figura(ABC):
     @abstractmethod
     def desenhar(self, canvas, cor="black"):
@@ -174,7 +175,7 @@ def desenhar_figuras():
 frame = Frame(janela)
 paddings = {'padx': 5, 'pady': 5}
 
-
+# menu de opção de figuras, linha ou rabisco
 tipo_figura_var = StringVar(janela)
 tipo_figura_var.set('Linha')
 option_menu = ttk.OptionMenu(frame, tipo_figura_var, 'Linha',
