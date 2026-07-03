@@ -11,7 +11,7 @@ cor_atual = "black"
 # classe figura
 class Figura(ABC):
     @abstractmethod
-    def desenhar(self, canvas, cor="black"):
+    def desenhar(self, canvas):
         pass
 
     @abstractmethod
@@ -24,9 +24,11 @@ class Linha(Figura):
     ini_y: int
     fim_x: int
     fim_y: int
+    cor: str
 
-    def desenhar(self, canvas, cor="black"):
-        canvas.create_line(self.ini_x, self.ini_y, self.fim_x, self.fim_y, fill=cor)
+
+    def desenhar(self, canvas):
+        canvas.create_line(self.ini_x, self.ini_y, self.fim_x, self.fim_y, fill=self.cor)
 
     def figura_imcompleta(self):
         return (self.ini_x, self.ini_y) == (self.fim_x, self.fim_y)
@@ -34,9 +36,10 @@ class Linha(Figura):
 @dataclass
 class Rabisco(Figura):
     pontos: list
+    cor: str
 
-    def desenhar(self, canvas, cor="black"):
-        canvas.create_line(self.pontos, fill=cor)
+    def desenhar(self, canvas):
+        canvas.create_line(self.pontos, fill=self.cor)
 
     def figura_imcompleta(self):
         return len(self.pontos) <= 1
@@ -47,9 +50,10 @@ class Retangulo(Figura):
     ini_y: int
     fim_x: int
     fim_y: int
+    cor: str
 
-    def desenhar(self, canvas, cor="black"):
-        canvas.create_rectangle(self.ini_x, self.ini_y, self.fim_x, self.fim_y, outline=cor, fill="")
+    def desenhar(self, canvas):
+        canvas.create_rectangle(self.ini_x, self.ini_y, self.fim_x, self.fim_y, outline=self.cor, fill="")
 
     def figura_imcompleta(self):
         return (self.ini_x, self.ini_y) == (self.fim_x, self.fim_y)
@@ -57,9 +61,10 @@ class Retangulo(Figura):
 @dataclass
 class Poligono(Figura):
     pontos: list
+    cor: str
 
-    def desenhar(self, canvas, cor="black"):
-        canvas.create_polygon(self.pontos, outline=cor, fill="")
+    def desenhar(self, canvas):
+        canvas.create_polygon(self.pontos, outline=self.cor, fill="")
 
     def figura_imcompleta(self):
         return len(self.pontos) < 3
@@ -69,11 +74,12 @@ class Circulo(Figura):
     ini_x: int
     ini_y: int
     raio: int
+    cor: str
 
-    def desenhar(self, canvas, cor="black"):
+    def desenhar(self, canvas):
         canvas.create_oval(self.ini_x - self.raio, self.ini_y - self.raio,
                            self.ini_x + self.raio, self.ini_y + self.raio,
-                           outline=cor, fill="")
+                           outline=self.cor, fill="")
 
     def figura_imcompleta(self):
         return self.raio == 0
@@ -84,11 +90,12 @@ class Oval(Figura):
     ini_y: int
     raio_x: int
     raio_y: int
+    cor: str
 
-    def desenhar(self, canvas, cor="black"):
+    def desenhar(self, canvas):
         canvas.create_oval(self.ini_x - self.raio_x, self.ini_y - self.raio_y,
                            self.ini_x + self.raio_x, self.ini_y + self.raio_y,
-                           outline=cor, fill="")
+                           outline=self.cor, fill="")
 
     def figura_imcompleta(self):
         return self.raio_x == 0 or self.raio_y == 0
@@ -109,7 +116,8 @@ def mudar_cor_fig(nova_cor):
         "Roxo": "purple",
     }
     cor_atual = mapa_cores.get(nova_cor, "black")
-    desenhar_figuras()
+    if nova_cor != cor_atual :
+        desenhar_figuras()
 
 
 figuras = []
@@ -119,16 +127,17 @@ figura_nova = None
 def iniciar_figura_nova(event):
     global figura_nova
     tipo = tipo_figura_var.get()
+
     if tipo == 'Linha':
-        figura_nova = Linha(event.x, event.y, event.x, event.y)
+        figura_nova = Linha(event.x, event.y, event.x, event.y, cor_atual)
     elif tipo == 'Rabisco':
-        figura_nova = Rabisco([(event.x, event.y)])
+        figura_nova = Rabisco([(event.x, event.y)], cor_atual)
     elif tipo == 'Circulo':
-        figura_nova = Circulo(event.x, event.y, 0)
+        figura_nova = Circulo(event.x, event.y, 0, cor_atual)
     elif tipo == 'Retangulo':
-        figura_nova = Retangulo(event.x, event.y, event.x, event.y)
+        figura_nova = Retangulo(event.x, event.y, event.x, event.y,cor_atual)
     elif tipo == 'Oval':
-        figura_nova = Oval(event.x, event.y, 0, 0)
+        figura_nova = Oval(event.x, event.y, 0, 0, cor_atual)
 
 
 def atualizar_figura_nova(event):
@@ -153,7 +162,7 @@ def atualizar_figura_nova(event):
         figura_nova.raio_y = abs(event.y - figura_nova.ini_y)
 
     desenhar_figuras()
-    figura_nova.desenhar(canvas, cor=cor_atual)
+    figura_nova.desenhar(canvas)
 
 
 def incluir_figura_nova(event):
@@ -167,9 +176,9 @@ def incluir_figura_nova(event):
 def desenhar_figuras():
     canvas.delete("all")
     for fig in figuras:
-        fig.desenhar(canvas, cor=cor_atual)
+        fig.desenhar(canvas)
     if figura_nova is not None:
-        figura_nova.desenhar(canvas, cor=cor_atual)
+        figura_nova.desenhar(canvas)
 
 
 frame = Frame(janela)
