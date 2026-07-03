@@ -116,7 +116,6 @@ def mudar_cor_fig(nova_cor):
         "Roxo": "purple",
     }
     cor_atual = mapa_cores.get(nova_cor, "black")
-    if nova_cor != cor_atual :
         desenhar_figuras()
 
 
