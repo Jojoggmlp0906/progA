@@ -18,8 +18,6 @@ class Figura(ABC):
     def figura_imcompleta(self):
         pass
 
-class Estado(ABC):
-
     
 @dataclass
 class Linha(Estado):
@@ -218,9 +216,8 @@ class EstadoOval(EstadoDesenho):
         fazer_as_figuras_finais()
 
 
-# ==========================================
-# GERENCIAMENTO DE INTERFACE E FLUXO
-# ==========================================
+
+
 
 figuras = []
 figura_nova = None
@@ -286,7 +283,7 @@ def incluir_figura_nova(event):
     estado_atual.soltar(event)
 
 def abrir_arquivo():
-    # Abre a caixa de diálogo e guarda o caminho do arquivo selecionado
+    # Abrir
     caminho = filedialog.askopenfilename(
         title="Selecione um arquivo",
         filetypes=[("Arquivos de Texto", "*.txt"), ("Todos os arquivos", "*.*")]
@@ -294,21 +291,14 @@ def abrir_arquivo():
 botao = tk.Button(janela, text="Abrir Arquivo", command=abrir_arquivo)
 botao.pack(pady=50)
 
-def abrir_arquivo():
-    # Abre a caixa de diálogo e retorna o caminho do arquivo selecionado
-    caminho_do_arquivo = filedialog.askopenfilename(
-        title="Selecione um arquivo",
-        filetypes=[("Arquivos de Texto", "*.txt"), ("Todos os arquivos", "*.*")]
-    )
     
     if caminho_do_arquivo:
-        print(f"Arquivo selecionado: {caminho_do_arquivo}")
-        # Aqui você pode usar a função open() do Python para ler o arquivo
+        print(f"Arquivo selecionado: {caminho_do_arquivo}"
         with open(caminho_do_arquivo, 'r', encoding='utf-8') as arquivo:
             conteudo = arquivo.read()
             print(conteudo)
             
-    botao = tk.Button(root, text="Abrir Arquivo", command=abrir_arquivo)
+botao2 = tk.Button(janela, text="Abrir", command=abrir_arquivo)
 botao.pack(pady=50)
 
 frame = Frame(janela)
