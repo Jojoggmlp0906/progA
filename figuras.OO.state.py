@@ -281,25 +281,35 @@ def atualizar_figura_nova(event):
 
 def incluir_figura_nova(event):
     estado_atual.soltar(event)
+    desenhar_figuras()
 
-def abrir_arquivo():
+def salvar_figura():
+    # Salvar
+    caminho = filedialog.askopenfilename(
+        title="Selecione uma figura para salvar", 
+        filetypes=[("Apenas uma figura", "*.text"), ("todos as figuras", "*.*")] 
+    )
+botao1 = tk.Button(janela, text="Abrir", command=salvar_figura)
+botao1.pack(pady=50)
+
+
+def abrir_figura():
     # Abrir
     caminho = filedialog.askopenfilename(
-        title="Selecione um arquivo",
-        filetypes=[("Arquivos de Texto", "*.txt"), ("Todos os arquivos", "*.*")]
+        title="Selecione uma figura para abrir",
+        filetypes=[("Apenas uma figura", "*.txt"), ("Todos as figuras", "*.*")]
     )
-botao = tk.Button(janela, text="Abrir Arquivo", command=abrir_arquivo)
-botao.pack(pady=50)
-
     
-    if caminho_do_arquivo:
-        print(f"Arquivo selecionado: {caminho_do_arquivo}"
-        with open(caminho_do_arquivo, 'r', encoding='utf-8') as arquivo:
-            conteudo = arquivo.read()
-            print(conteudo)
-            
-botao2 = tk.Button(janela, text="Abrir", command=abrir_arquivo)
-botao.pack(pady=50)
+botao2 = tk.Button(janela, text="Abrir", command=abrir_figura)
+botao2.pack(pady=50)
+          
+if fazer_as_figuras_finais:
+    print(f"Figura selecionada: {fazer_as_figuras_finais}")
+    with open( fazer_as_figuras_finais, 'r', encoding='utf-8') as  :
+    conteudo = figuras.read()
+    print(salvo)    
+
+  
 
 frame = Frame(janela)
 paddings = {'padx': 5, 'pady': 5}
