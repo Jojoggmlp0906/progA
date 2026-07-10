@@ -1,2 +1,0 @@
-# progA
-codigospy
