@@ -77,3 +77,39 @@ class EstadoOval(EstadoDesenho):
 
     def soltar(self, event, figura_atual):
         pass
+
+
+class EstadoSelecao(EstadoDesenho):
+    def __init__(self, controller):
+        self.controller = controller
+        self.ultimo_x = 0
+        self.ultimo_y = 0
+
+    def pressionar(self, event, cor_borda, cor_preenchimento):
+        
+        figura = self.controller.model.buscar_figura_por_posicao(event.x, event.y)
+        
+       
+        self.controller.figura_selecionada = figura
+        
+        
+        self.ultimo_x = event.x
+        self.ultimo_y = event.y
+        return None 
+
+    def arrastar(self, event, figura_atual):
+        
+        figura_alvo = self.controller.figura_selecionada
+        if figura_alvo:
+            dx = event.x - self.ultimo_x
+            dy = event.y - self.ultimo_y
+            
+            
+            figura_alvo.mover(dx, dy)
+            
+           
+            self.ultimo_x = event.x
+            self.ultimo_y = event.y
+
+    def soltar(self, event, figura_atual):
+        pass
