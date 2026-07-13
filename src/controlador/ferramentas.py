@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from modelo.figuras import Linha,Rabisco,Retangulo,Circulo,Oval
+from model.figuras import Linha,Rabisco,Retangulo,Circulo,Oval
 
 class EstadoDesenho(ABC):
     @abstractmethod
