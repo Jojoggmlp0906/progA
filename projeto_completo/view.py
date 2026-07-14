@@ -2,10 +2,12 @@ import tkinter as tk
 from tkinter import colorchooser
 
 class DesenhoView(tk.Tk):
-    def __init__(self):
+    def __init__(self, controller=None):
         super().__init__()
         self.title("Paint 2.0 - Edição Avançada")
         self.geometry("850x650")
+
+        self.controller = controller
 
         # "selecao" passa a ser o padrão ao abrir o programa
         self.ferramenta_atual = tk.StringVar(value="selecao")
@@ -33,6 +35,10 @@ class DesenhoView(tk.Tk):
         tk.Radiobutton(barra_ferramentas, text="Oval", variable=self.ferramenta_atual, value="oval").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Círculo", variable=self.ferramenta_atual, value="circulo").pack(side=tk.LEFT, padx=5)
 
+        # Botões de ordem de camadas
+        tk.Button(barra_ferramentas, text="⬆ Frente", command=self._mover_para_frente).pack(side=tk.LEFT, padx=5)
+        tk.Button(barra_ferramentas, text="⬇ Trás", command=self._mover_para_tras).pack(side=tk.LEFT, padx=5)
+
         # Botões de seleção de Cores
         tk.Button(barra_ferramentas, text="Cor Contorno", command=self._escolher_cor_borda).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="Cor Preenchimento", command=self._escolher_cor_preenchimento).pack(side=tk.LEFT, padx=5)
@@ -57,6 +63,14 @@ class DesenhoView(tk.Tk):
                 self.on_escolher_cor_preenchimento(cor)
             return cor
         return None
+
+    def _mover_para_frente(self):
+        if self.controller:
+            self.controller._trazer_para_frente()
+
+    def _mover_para_tras(self):
+        if self.controller:
+            self.controller._enviar_para_tras()
 
     def atualizar_tela(self, lista_figuras, figura_selecionada=None):
         """Limpa e renderiza tudo, incluindo a caixa de seleção se houver."""

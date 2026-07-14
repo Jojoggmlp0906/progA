@@ -5,10 +5,11 @@ from estados import EstadoLinha, EstadoRabisco, EstadoRetangulo, EstadoCirculo, 
 class DesenhoController:
     def __init__(self):
         self.model = DesenhoModel()
-        self.view = DesenhoView()
+        self.view = DesenhoView(self)
         
         self.estados = {
-            "selecao": EstadoSelecao(self), 
+            "selecao": EstadoSelecao(self),
+            "linha": EstadoLinha(),
             "rabisco": EstadoRabisco(),
             "retangulo": EstadoRetangulo(),
             "circulo": EstadoCirculo(),
@@ -41,6 +42,8 @@ class DesenhoController:
         
         self.view.bind("<Delete>", self._deletar_figura)
         self.view.bind("<BackSpace>", self._deletar_figura)
+        self.view.bind("<Control-Right>", self._trazer_para_frente)
+        self.view.bind("<Control-Left>", self._enviar_para_tras)
 
     def _ao_pressionar(self, event):
         estado = self._obter_estado_atual()
@@ -96,19 +99,29 @@ class DesenhoController:
             self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
             print("Figura deletada!")
 
+    def _trazer_para_frente(self, event=None):
+        if self.figura_selecionada:
+            self.model.trazer_para_frente(self.figura_selecionada)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            print("Figura movida para frente")
+
+    def _enviar_para_tras(self, event=None):
+        if self.figura_selecionada:
+            self.model.enviar_para_tras(self.figura_selecionada)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            print("Figura movida para trás")
+
     def _selecionar_cor_borda(self, cor):
-        if self.figura_selecionada is None:
-            return
-        self.figura_selecionada.cor_borda = cor
-        self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+        self.view.cor_borda = cor
+        if self.figura_selecionada is not None:
+            self.figura_selecionada.cor_borda = cor
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
 
     def _selecionar_cor_preenchimento(self, cor):
-        if self.figura_selecionada is None:
-            return
-        if hasattr(self.figura_selecionada, "cor_preenchimento"):
-            self.figura_selecionada.cor_preenchimento = cor
-        self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
-
+        self.view.cor_preenchimento = cor if cor else ""
+        if self.figura_selecionada is not None and hasattr(self.figura_selecionada, "cor_preenchimento"):
+            self.figura_selecionada.cor_preenchimento = cor if cor else ""
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
     def executar(self):
         self.view.mainloop()
 
