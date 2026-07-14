@@ -11,6 +11,8 @@ class DesenhoView(tk.Tk):
         self.ferramenta_atual = tk.StringVar(value="selecao")
         self.cor_borda = "black"
         self.cor_preenchimento = ""
+        self.on_escolher_cor_borda = None
+        self.on_escolher_cor_preenchimento = None
 
         self._criar_widgets()
 
@@ -42,10 +44,19 @@ class DesenhoView(tk.Tk):
         cor = colorchooser.askcolor(title="Escolha a cor do contorno")[1]
         if cor:
             self.cor_borda = cor
+            if self.on_escolher_cor_borda:
+                self.on_escolher_cor_borda(cor)
+            return cor
+        return None
 
     def _escolher_cor_preenchimento(self):
         cor = colorchooser.askcolor(title="Escolha a cor de preenchimento")[1]
-        self.cor_preenchimento = cor if cor else ""
+        if cor:
+            self.cor_preenchimento = cor
+            if self.on_escolher_cor_preenchimento:
+                self.on_escolher_cor_preenchimento(cor)
+            return cor
+        return None
 
     def atualizar_tela(self, lista_figuras, figura_selecionada=None):
         """Limpa e renderiza tudo, incluindo a caixa de seleção se houver."""

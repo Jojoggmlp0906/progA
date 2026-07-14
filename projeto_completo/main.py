@@ -30,6 +30,8 @@ class DesenhoController:
         self.view.canvas.bind("<B1-Motion>", self._ao_arrastar)
         self.view.canvas.bind("<ButtonRelease-1>", self._ao_soltar)
 
+        self.view.on_escolher_cor_borda = self._selecionar_cor_borda
+        self.view.on_escolher_cor_preenchimento = self._selecionar_cor_preenchimento
         
         self.view.bind("<Control-c>", self._copiar_figura)
         self.view.bind("<Control-v>", self._colar_figura)
@@ -93,6 +95,19 @@ class DesenhoController:
             self.figura_selecionada = None 
             self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
             print("Figura deletada!")
+
+    def _selecionar_cor_borda(self, cor):
+        if self.figura_selecionada is None:
+            return
+        self.figura_selecionada.cor_borda = cor
+        self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+
+    def _selecionar_cor_preenchimento(self, cor):
+        if self.figura_selecionada is None:
+            return
+        if hasattr(self.figura_selecionada, "cor_preenchimento"):
+            self.figura_selecionada.cor_preenchimento = cor
+        self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
 
     def executar(self):
         self.view.mainloop()
