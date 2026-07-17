@@ -13,24 +13,19 @@ class Figura:
         return self.__class__(self.x1 + desvio, self.y1 + desvio, self.x2 + desvio, self.y2 + desvio, self.cor_borda, self.cor_preenchimento)
 
     def mover(self, dx, dy):
-        
         self.x1 += dx
         self.y1 += dy
         self.x2 += dx
         self.y2 += dy
 
     def obter_limites(self):
-       
         return min(self.x1, self.x2), min(self.y1, self.y2), max(self.x1, self.x2), max(self.y1, self.y2)
 
     def contem_ponto(self, px, py):
-        
         x1, y1, x2, y2 = self.obter_limites()
-        
         return (x1 - 4 <= px <= x2 + 4) and (y1 - 4 <= py <= y2 + 4)
 
     def renderizar_caixa_selecao(self, canvas):
-        
         x1, y1, x2, y2 = self.obter_limites()
         canvas.create_rectangle(x1 - 4, y1 - 4, x2 + 4, y2 + 4, outline="blue", dash=(4, 4), width=1)
 
@@ -91,7 +86,6 @@ class Rabisco:
         return min(xs), min(ys), max(xs), max(ys)
 
     def contem_ponto(self, px, py):
-        
         for x, y in self.pontos:
             if math.hypot(px - x, py - y) < 8:
                 return True
@@ -117,8 +111,17 @@ class DesenhoModel:
         return self.figuras
 
     def buscar_figura_por_posicao(self, x, y):
-        
         for figura in reversed(self.figuras):
             if figura.contem_ponto(x, y):
                 return figura
         return None
+
+    def trazer_para_frente(self, figura):
+        if figura in self.figuras:
+            self.figuras.remove(figura)
+            self.figuras.append(figura)
+
+    def enviar_para_tras(self, figura):
+        if figura in self.figuras:
+            self.figuras.remove(figura)
+            self.figuras.insert(0, figura)
