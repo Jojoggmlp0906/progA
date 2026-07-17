@@ -116,16 +116,12 @@ class DesenhoModel:
                 return figura
         return None
 
-    # --- NOVAS FUNCIONALIDADES DE CAMADA (LAYER) ---
-
     def trazer_para_frente(self, figura):
-        """Move a figura para o final da lista (será desenhada por último, ficando no topo)."""
         if figura in self.figuras:
             self.figuras.remove(figura)
             self.figuras.append(figura)
 
     def enviar_para_tras(self, figura):
-        """Move a figura para o início da lista (será desenhada primeiro, ficando ao fundo)."""
         if figura in self.figuras:
             self.figuras.remove(figura)
             self.figuras.insert(0, figura)
