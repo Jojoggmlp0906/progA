@@ -102,6 +102,43 @@ class Rabisco:
         canvas.create_rectangle(x1 - 4, y1 - 4, x2 + 4, y2 + 4, outline="blue", dash=(4, 4), width=1)
 
 
+class FormaComposta(Figura):
+    def __init__(self, figuras, cor_borda="black", cor_preenchimento=""):
+        self.figuras = list(figuras)
+        self.cor_borda = cor_borda
+        self.cor_preenchimento = cor_preenchimento
+
+    def renderizar(self, canvas):
+        for figura in self.figuras:
+            figura.renderizar(canvas)
+
+    def clonar(self, desvio=20):
+        figuras_clonadas = [figura.clonar(desvio) for figura in self.figuras]
+        return FormaComposta(figuras_clonadas, self.cor_borda, self.cor_preenchimento)
+
+    def mover(self, dx, dy):
+        for figura in self.figuras:
+            figura.mover(dx, dy)
+
+    def obter_limites(self):
+        if not self.figuras:
+            return (0, 0, 0, 0)
+
+        limites = [figura.obter_limites() for figura in self.figuras]
+        x1s = [limite[0] for limite in limites]
+        y1s = [limite[1] for limite in limites]
+        x2s = [limite[2] for limite in limites]
+        y2s = [limite[3] for limite in limites]
+        return min(x1s), min(y1s), max(x2s), max(y2s)
+
+    def contem_ponto(self, px, py):
+        return any(figura.contem_ponto(px, py) for figura in self.figuras)
+
+    def renderizar_caixa_selecao(self, canvas):
+        x1, y1, x2, y2 = self.obter_limites()
+        canvas.create_rectangle(x1 - 4, y1 - 4, x2 + 4, y2 + 4, outline="blue", dash=(4, 4), width=1)
+
+
 class DesenhoModel:
     def __init__(self):
         self.figuras = []
@@ -115,6 +152,18 @@ class DesenhoModel:
 
     def obter_figuras(self):
         return self.figuras
+
+    def criar_forma_composta(self, figuras):
+        figuras_validas = [figura for figura in figuras if figura in self.figuras]
+        if not figuras_validas:
+            return None
+
+        for figura in figuras_validas:
+            self.remover_figura(figura)
+
+        forma_composta = FormaComposta(figuras_validas)
+        self.adicionar_figura(forma_composta)
+        return forma_composta
 
     def buscar_figura_por_posicao(self, x, y):
         

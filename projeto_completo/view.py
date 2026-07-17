@@ -38,6 +38,7 @@ class DesenhoView(tk.Tk):
         # Botões de ordem de camadas
         tk.Button(barra_ferramentas, text="⬆ Frente", command=self._mover_para_frente).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="⬇ Trás", command=self._mover_para_tras).pack(side=tk.LEFT, padx=5)
+        tk.Button(barra_ferramentas, text="Agrupar", command=self._agrupar_figuras).pack(side=tk.LEFT, padx=5)
 
         # Botões de seleção de Cores
         tk.Button(barra_ferramentas, text="Cor Contorno", command=self._escolher_cor_borda).pack(side=tk.LEFT, padx=5)
@@ -71,6 +72,10 @@ class DesenhoView(tk.Tk):
     def _mover_para_tras(self):
         if self.controller:
             self.controller._enviar_para_tras()
+
+    def _agrupar_figuras(self):
+        if self.controller:
+            self.controller._agrupar_figuras()
 
     def atualizar_tela(self, lista_figuras, figura_selecionada=None):
         """Limpa e renderiza tudo, incluindo a caixa de seleção se houver."""

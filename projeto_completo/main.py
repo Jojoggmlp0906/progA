@@ -1,4 +1,4 @@
-from model.figuras import DesenhoModel
+from model.figuras import DesenhoModel, FormaComposta
 from view import DesenhoView
 from estados import EstadoLinha, EstadoRabisco, EstadoRetangulo, EstadoCirculo, EstadoOval, EstadoSelecao
 
@@ -110,6 +110,17 @@ class DesenhoController:
             self.model.enviar_para_tras(self.figura_selecionada)
             self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
             print("Figura movida para trás")
+
+    def _agrupar_figuras(self, event=None):
+        figuras = [figura for figura in self.model.obter_figuras() if not isinstance(figura, FormaComposta)]
+        if len(figuras) < 2:
+            return
+
+        forma_composta = self.model.criar_forma_composta(figuras)
+        if forma_composta:
+            self.figura_selecionada = forma_composta
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            print("Figuras agrupadas!")
 
     def _selecionar_cor_borda(self, cor):
         self.view.cor_borda = cor
