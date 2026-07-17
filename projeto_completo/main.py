@@ -114,7 +114,7 @@ class DesenhoController:
                 figura.cor_preenchimento = cor_final
         self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
-    def ejecutar(self):
+    def executar(self):
         self.view.mainloop()
 
 if __name__ == "__main__":
