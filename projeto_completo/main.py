@@ -1,6 +1,6 @@
-from model.figuras import DesenhoModel
+from model.figuras import DesenhoModel, FormaComposta
 from view import DesenhoView
-from estados import EstadoLinha, EstadoRabisco, EstadoRetangulo, EstadoCirculo, EstadoOval, EstadoSelecao
+from estados import EstadoLinha, EstadoRabisco, EstadoRetangulo, EstadoCirculo, EstadoOval, EstadoPoligono, EstadoPoligonoRegular, EstadoSelecao
 
 class DesenhoController:
     def __init__(self):
@@ -13,7 +13,9 @@ class DesenhoController:
             "rabisco": EstadoRabisco(),
             "retangulo": EstadoRetangulo(),
             "circulo": EstadoCirculo(),
-            "oval": EstadoOval()
+            "oval": EstadoOval(),
+            "poligono": EstadoPoligono(),
+            "regular": EstadoPoligonoRegular()
         }
         
         self.figura_atual = None       
@@ -29,6 +31,7 @@ class DesenhoController:
         self.view.canvas.bind("<ButtonPress-1>", self._ao_pressionar)
         self.view.canvas.bind("<B1-Motion>", self._ao_arrastar)
         self.view.canvas.bind("<ButtonRelease-1>", self._ao_soltar)
+        self.view.canvas.bind("<ButtonPress-3>", self._finalizar_poligono)
 
         self.view.on_escolher_cor_borda = self._selecionar_cor_borda
         self.view.on_escolher_cor_preenchimento = self._selecionar_cor_preenchimento
@@ -47,11 +50,14 @@ class DesenhoController:
         estado = self._obter_estado_atual()
         if estado:
             retorno = estado.pressionar(event, self.view.cor_borda, self.view.cor_preenchimento)
+            
             if retorno:
                 self.figura_atual = retorno
-                self.model.adicionar_figura(self.figura_atual)
-                self.figuras_selecionadas = {self.figura_atual}
-            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
+                if retorno not in self.model.obter_figuras():
+                    self.model.adicionar_figura(self.figura_atual)
+                self.figura_selecionada = self.figura_atual
+                
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
 
     def _ao_arrastar(self, event):
         estado = self._obter_estado_atual()
@@ -88,6 +94,13 @@ class DesenhoController:
             self.figuras_selecionadas.clear()
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
+    def _finalizar_poligono(self, event=None):
+        estado = self._obter_estado_atual()
+        if estado and hasattr(estado, "finalizar"):
+            if estado.finalizar():
+                self.figura_atual = None
+                self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+
     def _trazer_para_frente(self, event=None):
         if self.figuras_selecionadas:
             for figura in self.figuras_selecionadas:
@@ -100,6 +113,17 @@ class DesenhoController:
                 self.model.enviar_para_tras(figura)
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
+    def _agrupar_figuras(self, event=None):
+        figuras = [figura for figura in self.model.obter_figuras() if not isinstance(figura, FormaComposta)]
+        if len(figuras) < 2:
+            return
+
+        forma_composta = self.model.criar_forma_composta(figuras)
+        if forma_composta:
+            self.figura_selecionada = forma_composta
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            print("Figuras agrupadas!")
+
     def _selecionar_cor_borda(self, cor):
         self.view.cor_borda = cor
         for figura in self.figuras_selecionadas:
@@ -107,14 +131,12 @@ class DesenhoController:
         self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _selecionar_cor_preenchimento(self, cor):
-        cor_final = cor if cor else ""
-        self.view.cor_preenchimento = cor_final
-        for figura in self.figuras_selecionadas:
-            if hasattr(figura, "cor_preenchimento"):
-                figura.cor_preenchimento = cor_final
-        self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
-
-    def ejecutar(self):
+        self.view.cor_preenchimento = cor if cor else ""
+        if self.figura_selecionada is not None and hasattr(self.figura_selecionada, "cor_preenchimento"):
+            self.figura_selecionada.cor_preenchimento = cor if cor else ""
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            
+    def executar(self):
         self.view.mainloop()
 
 if __name__ == "__main__":
