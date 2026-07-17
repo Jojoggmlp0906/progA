@@ -8,8 +8,6 @@ class DesenhoView(tk.Tk):
         self.geometry("850x650")
 
         self.controller = controller
-
-        # "selecao" passa a ser o padrão ao abrir o programa
         self.ferramenta_atual = tk.StringVar(value="selecao")
         self.cor_borda = "black"
         self.cor_preenchimento = ""
@@ -22,13 +20,9 @@ class DesenhoView(tk.Tk):
         barra_ferramentas = tk.Frame(self, bg="lightgray")
         barra_ferramentas.pack(side=tk.TOP, fill=tk.X, pady=5)
 
-        # NOVA FERRAMENTA: SELEÇÃO
-        tk.Radiobutton(barra_ferramentas, text="✨ Selecionar (Mover/Del)", variable=self.ferramenta_atual, value="selecao", fg="blue").pack(side=tk.LEFT, padx=10)
-        
-        # Divisor visual
+        tk.Radiobutton(barra_ferramentas, text="✨ Selecionar", variable=self.ferramenta_atual, value="selecao", fg="blue").pack(side=tk.LEFT, padx=10)
         tk.Label(barra_ferramentas, text="|", bg="lightgray").pack(side=tk.LEFT, padx=5)
 
-        # Botões de seleção de Formas
         tk.Radiobutton(barra_ferramentas, text="Linha", variable=self.ferramenta_atual, value="linha").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Rabisco", variable=self.ferramenta_atual, value="rabisco").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Retângulo", variable=self.ferramenta_atual, value="retangulo").pack(side=tk.LEFT, padx=5)
@@ -38,12 +32,10 @@ class DesenhoView(tk.Tk):
         tk.Radiobutton(barra_ferramentas, text="Regular", variable=self.ferramenta_atual, value="regular").pack(side=tk.LEFT, padx=5)
         tk.Label(barra_ferramentas, text="(Clique direito para fechar polígonos)", bg="lightgray", fg="gray").pack(side=tk.LEFT, padx=10)
 
-        # Botões de ordem de camadas
         tk.Button(barra_ferramentas, text="⬆ Frente", command=self._mover_para_frente).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="⬇ Trás", command=self._mover_para_tras).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="Agrupar", command=self._agrupar_figuras).pack(side=tk.LEFT, padx=5)
 
-        # Botões de seleção de Cores
         tk.Button(barra_ferramentas, text="Cor Contorno", command=self._escolher_cor_borda).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="Cor Preenchimento", command=self._escolher_cor_preenchimento).pack(side=tk.LEFT, padx=5)
 
@@ -83,11 +75,9 @@ class DesenhoView(tk.Tk):
     def atualizar_tela(self, lista_figuras, figura_selecionada=None):
         """Limpa e renderiza tudo, incluindo a caixa de seleção se houver."""
         self.canvas.delete("all")
-        
-        # Desenha as figuras normais
         for figura in lista_figuras:
             figura.renderizar(self.canvas)
             
-        # Se houver uma figura selecionada pelo usuário, desenha uma caixa pontilhada ao redor dela
-        if figura_selecionada:
-            figura_selecionada.renderizar_caixa_selecao(self.canvas)
+        if figuras_selecionadas:
+            for figura in figuras_selecionadas:
+                figura.renderizar_caixa_selecao(self.canvas)

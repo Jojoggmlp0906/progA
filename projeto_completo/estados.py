@@ -134,30 +134,35 @@ class EstadoSelecao(EstadoDesenho):
         self.ultimo_y = 0
 
     def pressionar(self, event, cor_borda, cor_preenchimento):
-        
         figura = self.controller.model.buscar_figura_por_posicao(event.x, event.y)
+        shift_pressionado = (event.state & 0x0001) != 0
         
-       
-        self.controller.figura_selecionada = figura
-        
+        if figura:
+            if shift_pressionado:
+                if figura in self.controller.figuras_selecionadas:
+                    self.controller.figuras_selecionadas.remove(figura)
+                else:
+                    self.controller.figuras_selecionadas.add(figura)
+            else:
+                if figura not in self.controller.figuras_selecionadas:
+                    self.controller.figuras_selecionadas = {figura}
+        else:
+            if not shift_pressionado:
+                self.controller.figuras_selecionadas.clear()
         
         self.ultimo_x = event.x
         self.ultimo_y = event.y
         return None 
 
     def arrastar(self, event, figura_atual):
+        dx = event.x - self.ultimo_x
+        dy = event.y - self.ultimo_y
         
-        figura_alvo = self.controller.figura_selecionada
-        if figura_alvo:
-            dx = event.x - self.ultimo_x
-            dy = event.y - self.ultimo_y
+        for figura in self.controller.figuras_selecionadas:
+            figura.mover(dx, dy)
             
-            
-            figura_alvo.mover(dx, dy)
-            
-           
-            self.ultimo_x = event.x
-            self.ultimo_y = event.y
+        self.ultimo_x = event.x
+        self.ultimo_y = event.y
 
     def soltar(self, event, figura_atual):
         pass
