@@ -63,103 +63,6 @@ class Circulo(Figura):
         return self.x1 - raio, self.y1 - raio, self.x1 + raio, self.y1 + raio
 
 
-class Poligono(Figura):
-    def __init__(self, pontos, cor_borda="black", cor_preenchimento=""):
-        self.pontos = pontos
-        self.cor_borda = cor_borda
-        self.cor_preenchimento = cor_preenchimento
-
-    def renderizar(self, canvas):
-        if len(self.pontos) >= 3:
-            pontos_planos = [coord for pt in self.pontos for coord in pt]
-            return canvas.create_polygon(pontos_planos, outline=self.cor_borda, fill=self.cor_preenchimento)
-        if len(self.pontos) == 2:
-            pontos_planos = [coord for pt in self.pontos for coord in pt]
-            return canvas.create_line(pontos_planos, fill=self.cor_borda, width=2)
-
-    def clonar(self, desvio=20):
-        novos_pontos = [(x + desvio, y + desvio) for (x, y) in self.pontos]
-        return Poligono(novos_pontos, self.cor_borda, self.cor_preenchimento)
-
-    def mover(self, dx, dy):
-        self.pontos = [(x + dx, y + dy) for (x, y) in self.pontos]
-
-    def obter_limites(self):
-        xs = [x for x, _ in self.pontos]
-        ys = [y for _, y in self.pontos]
-        return min(xs), min(ys), max(xs), max(ys)
-
-    def contem_ponto(self, px, py):
-        if len(self.pontos) < 2:
-            return False
-
-        for i in range(len(self.pontos)):
-            x1, y1 = self.pontos[i]
-            x2, y2 = self.pontos[(i + 1) % len(self.pontos)]
-            if math.hypot(px - x1, py - y1) < 6:
-                return True
-            L2 = (x2 - x1) ** 2 + (y2 - y1) ** 2
-            if L2 == 0:
-                continue
-            t = max(0, min(1, ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / L2))
-            proj_x = x1 + t * (x2 - x1)
-            proj_y = y1 + t * (y2 - y1)
-            if math.hypot(px - proj_x, py - proj_y) < 6:
-                return True
-        return False
-
-
-class PoligonoRegular(Figura):
-    def __init__(self, x1, y1, x2, y2, lados=5, cor_borda="black", cor_preenchimento=""):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
-        self.lados = max(3, lados)
-        self.cor_borda = cor_borda
-        self.cor_preenchimento = cor_preenchimento
-
-    def _vertices(self):
-        raio = math.hypot(self.x2 - self.x1, self.y2 - self.y1)
-        if raio == 0:
-            return []
-        angulo_inicial = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
-        return [
-            (
-                self.x1 + raio * math.cos(angulo_inicial + 2 * math.pi * i / self.lados),
-                self.y1 + raio * math.sin(angulo_inicial + 2 * math.pi * i / self.lados),
-            )
-            for i in range(self.lados)
-        ]
-
-    def renderizar(self, canvas):
-        vertices = self._vertices()
-        if vertices:
-            pontos_planos = [coord for pt in vertices for coord in pt]
-            return canvas.create_polygon(pontos_planos, outline=self.cor_borda, fill=self.cor_preenchimento)
-
-    def clonar(self, desvio=20):
-        return PoligonoRegular(self.x1 + desvio, self.y1 + desvio, self.x2 + desvio, self.y2 + desvio, self.lados, self.cor_borda, self.cor_preenchimento)
-
-    def mover(self, dx, dy):
-        self.x1 += dx
-        self.y1 += dy
-        self.x2 += dx
-        self.y2 += dy
-
-    def obter_limites(self):
-        vertices = self._vertices()
-        if not vertices:
-            return self.x1, self.y1, self.x1, self.y1
-        xs = [x for x, _ in vertices]
-        ys = [y for _, y in vertices]
-        return min(xs), min(ys), max(xs), max(ys)
-
-    def contem_ponto(self, px, py):
-        x1, y1, x2, y2 = self.obter_limites()
-        return (x1 - 4 <= px <= x2 + 4) and (y1 - 4 <= py <= y2 + 4)
-
-
 class Rabisco:
     def __init__(self, pontos, cor_borda="black"):
         self.pontos = pontos
@@ -193,43 +96,6 @@ class Rabisco:
         canvas.create_rectangle(x1 - 4, y1 - 4, x2 + 4, y2 + 4, outline="blue", dash=(4, 4), width=1)
 
 
-class FormaComposta(Figura):
-    def __init__(self, figuras, cor_borda="black", cor_preenchimento=""):
-        self.figuras = list(figuras)
-        self.cor_borda = cor_borda
-        self.cor_preenchimento = cor_preenchimento
-
-    def renderizar(self, canvas):
-        for figura in self.figuras:
-            figura.renderizar(canvas)
-
-    def clonar(self, desvio=20):
-        figuras_clonadas = [figura.clonar(desvio) for figura in self.figuras]
-        return FormaComposta(figuras_clonadas, self.cor_borda, self.cor_preenchimento)
-
-    def mover(self, dx, dy):
-        for figura in self.figuras:
-            figura.mover(dx, dy)
-
-    def obter_limites(self):
-        if not self.figuras:
-            return (0, 0, 0, 0)
-
-        limites = [figura.obter_limites() for figura in self.figuras]
-        x1s = [limite[0] for limite in limites]
-        y1s = [limite[1] for limite in limites]
-        x2s = [limite[2] for limite in limites]
-        y2s = [limite[3] for limite in limites]
-        return min(x1s), min(y1s), max(x2s), max(y2s)
-
-    def contem_ponto(self, px, py):
-        return any(figura.contem_ponto(px, py) for figura in self.figuras)
-
-    def renderizar_caixa_selecao(self, canvas):
-        x1, y1, x2, y2 = self.obter_limites()
-        canvas.create_rectangle(x1 - 4, y1 - 4, x2 + 4, y2 + 4, outline="blue", dash=(4, 4), width=1)
-
-
 class DesenhoModel:
     def __init__(self):
         self.figuras = []
@@ -241,30 +107,8 @@ class DesenhoModel:
         if figura in self.figuras:
             self.figuras.remove(figura)
 
-    def trazer_para_frente(self, figura):
-        if figura in self.figuras:
-            self.figuras.remove(figura)
-            self.figuras.append(figura)
-
-    def enviar_para_tras(self, figura):
-        if figura in self.figuras:
-            self.figuras.remove(figura)
-            self.figuras.insert(0, figura)
-
     def obter_figuras(self):
         return self.figuras
-
-    def criar_forma_composta(self, figuras):
-        figuras_validas = [figura for figura in figuras if figura in self.figuras]
-        if not figuras_validas:
-            return None
-
-        for figura in figuras_validas:
-            self.remover_figura(figura)
-
-        forma_composta = FormaComposta(figuras_validas)
-        self.adicionar_figura(forma_composta)
-        return forma_composta
 
     def buscar_figura_por_posicao(self, x, y):
         for figura in reversed(self.figuras):
