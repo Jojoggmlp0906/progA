@@ -57,7 +57,7 @@ class DesenhoController:
                     self.model.adicionar_figura(self.figura_atual)
                 self.figura_selecionada = self.figura_atual
                 
-            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _ao_arrastar(self, event):
         estado = self._obter_estado_atual()
@@ -99,7 +99,7 @@ class DesenhoController:
         if estado and hasattr(estado, "finalizar"):
             if estado.finalizar():
                 self.figura_atual = None
-                self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+                self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _trazer_para_frente(self, event=None):
         if self.figuras_selecionadas:
@@ -134,7 +134,7 @@ class DesenhoController:
         self.view.cor_preenchimento = cor if cor else ""
         if self.figura_selecionada is not None and hasattr(self.figura_selecionada, "cor_preenchimento"):
             self.figura_selecionada.cor_preenchimento = cor if cor else ""
-            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
             
     def executar(self):
         self.view.mainloop()
