@@ -1,6 +1,6 @@
 from model.figuras import DesenhoModel, FormaComposta
 from view import DesenhoView
-from estados import EstadoLinha, EstadoRabisco, EstadoRetangulo, EstadoCirculo, EstadoOval, EstadoSelecao
+from estados import EstadoLinha, EstadoRabisco, EstadoRetangulo, EstadoCirculo, EstadoOval, EstadoPoligono, EstadoPoligonoRegular, EstadoSelecao
 
 class DesenhoController:
     def __init__(self):
@@ -13,7 +13,9 @@ class DesenhoController:
             "rabisco": EstadoRabisco(),
             "retangulo": EstadoRetangulo(),
             "circulo": EstadoCirculo(),
-            "oval": EstadoOval()
+            "oval": EstadoOval(),
+            "poligono": EstadoPoligono(),
+            "regular": EstadoPoligonoRegular()
         }
         
         self.figura_atual = None       
@@ -30,6 +32,7 @@ class DesenhoController:
         self.view.canvas.bind("<ButtonPress-1>", self._ao_pressionar)
         self.view.canvas.bind("<B1-Motion>", self._ao_arrastar)
         self.view.canvas.bind("<ButtonRelease-1>", self._ao_soltar)
+        self.view.canvas.bind("<ButtonPress-3>", self._finalizar_poligono)
 
         self.view.on_escolher_cor_borda = self._selecionar_cor_borda
         self.view.on_escolher_cor_preenchimento = self._selecionar_cor_preenchimento
@@ -50,10 +53,10 @@ class DesenhoController:
         if estado:
             retorno = estado.pressionar(event, self.view.cor_borda, self.view.cor_preenchimento)
             
-            
             if retorno:
                 self.figura_atual = retorno
-                self.model.adicionar_figura(self.figura_atual)
+                if retorno not in self.model.obter_figuras():
+                    self.model.adicionar_figura(self.figura_atual)
                 self.figura_selecionada = self.figura_atual
                 
             self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
@@ -99,6 +102,13 @@ class DesenhoController:
             self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
             print("Figura deletada!")
 
+    def _finalizar_poligono(self, event=None):
+        estado = self._obter_estado_atual()
+        if estado and hasattr(estado, "finalizar"):
+            if estado.finalizar():
+                self.figura_atual = None
+                self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+
     def _trazer_para_frente(self, event=None):
         if self.figura_selecionada:
             self.model.trazer_para_frente(self.figura_selecionada)
@@ -133,6 +143,7 @@ class DesenhoController:
         if self.figura_selecionada is not None and hasattr(self.figura_selecionada, "cor_preenchimento"):
             self.figura_selecionada.cor_preenchimento = cor if cor else ""
             self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            
     def executar(self):
         self.view.mainloop()
 
