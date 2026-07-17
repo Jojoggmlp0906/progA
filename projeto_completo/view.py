@@ -28,9 +28,13 @@ class DesenhoView(tk.Tk):
         tk.Radiobutton(barra_ferramentas, text="Retângulo", variable=self.ferramenta_atual, value="retangulo").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Oval", variable=self.ferramenta_atual, value="oval").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Círculo", variable=self.ferramenta_atual, value="circulo").pack(side=tk.LEFT, padx=5)
+        tk.Radiobutton(barra_ferramentas, text="Polígono", variable=self.ferramenta_atual, value="poligono").pack(side=tk.LEFT, padx=5)
+        tk.Radiobutton(barra_ferramentas, text="Regular", variable=self.ferramenta_atual, value="regular").pack(side=tk.LEFT, padx=5)
+        tk.Label(barra_ferramentas, text="(Clique direito para fechar polígonos)", bg="lightgray", fg="gray").pack(side=tk.LEFT, padx=10)
 
         tk.Button(barra_ferramentas, text="⬆ Frente", command=self._mover_para_frente).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="⬇ Trás", command=self._mover_para_tras).pack(side=tk.LEFT, padx=5)
+        tk.Button(barra_ferramentas, text="Agrupar", command=self._agrupar_figuras).pack(side=tk.LEFT, padx=5)
 
         tk.Button(barra_ferramentas, text="Cor Contorno", command=self._escolher_cor_borda).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="Cor Preenchimento", command=self._escolher_cor_preenchimento).pack(side=tk.LEFT, padx=5)
@@ -64,11 +68,17 @@ class DesenhoView(tk.Tk):
         if self.controller:
             self.controller._enviar_para_tras()
 
+    def _agrupar_figuras(self):
+        if self.controller:
+            self.controller._agrupar_figuras()
+
+    def atualizar_tela(self, lista_figuras, figura_selecionada=None):
+        """Limpa e renderiza tudo, incluindo a caixa de seleção se houver."""
     def atualizar_tela(self, lista_figuras, figuras_selecionadas=None):
         self.canvas.delete("all")
         for figura in lista_figuras:
             figura.renderizar(self.canvas)
-            
+
         if figuras_selecionadas:
             for figura in figuras_selecionadas:
                 figura.renderizar_caixa_selecao(self.canvas)
