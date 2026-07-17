@@ -34,6 +34,9 @@ class DesenhoView(tk.Tk):
         tk.Radiobutton(barra_ferramentas, text="Retângulo", variable=self.ferramenta_atual, value="retangulo").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Oval", variable=self.ferramenta_atual, value="oval").pack(side=tk.LEFT, padx=5)
         tk.Radiobutton(barra_ferramentas, text="Círculo", variable=self.ferramenta_atual, value="circulo").pack(side=tk.LEFT, padx=5)
+        tk.Radiobutton(barra_ferramentas, text="Polígono", variable=self.ferramenta_atual, value="poligono").pack(side=tk.LEFT, padx=5)
+        tk.Radiobutton(barra_ferramentas, text="Regular", variable=self.ferramenta_atual, value="regular").pack(side=tk.LEFT, padx=5)
+        tk.Label(barra_ferramentas, text="(Clique direito para fechar polígonos)", bg="lightgray", fg="gray").pack(side=tk.LEFT, padx=10)
 
         # Botões de ordem de camadas
         tk.Button(barra_ferramentas, text="⬆ Frente", command=self._mover_para_frente).pack(side=tk.LEFT, padx=5)
