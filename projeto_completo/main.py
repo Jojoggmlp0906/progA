@@ -121,7 +121,7 @@ class DesenhoController:
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _agrupar_figuras(self, event=None):
-        figuras_selecionadas = list(self.figuras_selecionadas)
+        figuras_selecionadas = self._obter_figuras_selecionadas_em_ordem()
         if len(figuras_selecionadas) < 2:
             return
 
