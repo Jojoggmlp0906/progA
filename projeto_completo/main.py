@@ -44,8 +44,10 @@ class DesenhoController:
 
         self.view.bind("<Delete>", self._deletar_figuras)
         self.view.bind("<BackSpace>", self._deletar_figuras)
-        self.view.bind("<Up>", self._trazer_para_frente)
-        self.view.bind("<Down>", self._enviar_para_tras)
+        self.view.bind("<Shift-Up>", self._trazer_para_frente)
+        self.view.bind("<Shift-Down>", self._enviar_para_tras)
+        self.view.bind("<Shift-Right>", self._passo_para_frente)
+        self.view.bind("<Shift-Left>", self._passo_para_tras)
 
     def _ao_pressionar(self, event):
         estado = self._obter_estado_atual()
@@ -106,8 +108,9 @@ class DesenhoController:
                 self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
 
     def _obter_figuras_selecionadas_em_ordem(self):
-        return [figura for figura in self.model.obter_figuras() if figura in self.figuras_selecionadas]
-
+        figuras_ordenadas = list(filter(self.figuras_selecionadas.__contains__, self.model.obter_figuras()))
+        return figuras_ordenadas
+    
     def _trazer_para_frente(self, event=None):
         figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
         if figuras_ordenadas:
@@ -118,6 +121,18 @@ class DesenhoController:
         figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
         if figuras_ordenadas:
             self.model.enviar_para_tras(figuras_ordenadas)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
+
+    def _passo_para_frente(self, event=None):
+        figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
+        if figuras_ordenadas:
+            self.model.trazer_um_passo_para_frente(figuras_ordenadas)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
+
+    def _passo_para_tras(self, event=None):
+        figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
+        if figuras_ordenadas:
+            self.model.enviar_um_passo_para_tras(figuras_ordenadas)
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _agrupar_figuras(self, event=None):

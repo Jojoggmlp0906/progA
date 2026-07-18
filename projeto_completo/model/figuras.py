@@ -263,10 +263,47 @@ class DesenhoModel:
 
         if isinstance(figuras, (list, tuple, set)):
             figuras_selecionadas = set(figuras)
-            return [self.figuras in figuras_selecionadas]
+            return [figura for figura in self.figuras if figura in figuras_selecionadas]
 
-        else:
+        if figuras in self.figuras:
             return [figuras]
+
+        return []
+
+    def _mover_em_passo(self, figuras, direcao):
+        figuras_a_mover = self._normalizar_figuras(figuras)
+        if not figuras_a_mover:
+            return
+
+        figuras_a_mover_set = set(figuras_a_mover)
+        novas_figuras = list(self.figuras)
+
+        if direcao > 0:
+            for figura in reversed(figuras_a_mover):
+                try:
+                    indice = novas_figuras.index(figura)
+                except ValueError:
+                    continue
+
+                if indice < len(novas_figuras) - 1:
+                    figura_a_frente = novas_figuras[indice + 1]
+                    if figura_a_frente not in figuras_a_mover_set:
+                        novas_figuras.pop(indice)
+                        novas_figuras.insert(indice + 1, figura)
+        else:
+            for figura in figuras_a_mover:
+                try:
+                    indice = novas_figuras.index(figura)
+                except ValueError:
+                    continue
+
+                if indice > 0:
+                    figura_antes = novas_figuras[indice - 1]
+                    if figura_antes not in figuras_a_mover_set:
+                        novas_figuras.pop(indice)
+                        novas_figuras.insert(indice - 1, figura)
+
+        self.figuras = novas_figuras
 
     def trazer_para_frente(self, figuras):
         figuras_a_mover = self._normalizar_figuras(figuras)
@@ -283,6 +320,12 @@ class DesenhoModel:
 
         restantes = [figura for figura in self.figuras if figura not in figuras_a_mover]
         self.figuras = figuras_a_mover + restantes
+
+    def trazer_um_passo_para_frente(self, figuras):
+        self._mover_em_passo(figuras, 1)
+
+    def enviar_um_passo_para_tras(self, figuras):
+        self._mover_em_passo(figuras, -1)
 
     def obter_figuras(self):
         return self.figuras
