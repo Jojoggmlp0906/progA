@@ -32,8 +32,6 @@ class DesenhoView(tk.Tk):
         tk.Radiobutton(barra_ferramentas, text="Regular", variable=self.ferramenta_atual, value="regular").pack(side=tk.LEFT, padx=5)
         tk.Label(barra_ferramentas, text="(Clique direito para fechar polígonos)", bg="lightgray", fg="gray").pack(side=tk.LEFT, padx=10)
 
-        tk.Button(barra_ferramentas, text="⬆ Frente", command=self._mover_para_frente).pack(side=tk.LEFT, padx=5)
-        tk.Button(barra_ferramentas, text="⬇ Trás", command=self._mover_para_tras).pack(side=tk.LEFT, padx=5)
         tk.Button(barra_ferramentas, text="Agrupar", command=self._agrupar_figuras).pack(side=tk.LEFT, padx=5)
 
         tk.Button(barra_ferramentas, text="Cor Contorno", command=self._escolher_cor_borda).pack(side=tk.LEFT, padx=5)
@@ -59,14 +57,6 @@ class DesenhoView(tk.Tk):
                 self.on_escolher_cor_preenchimento(cor)
             return cor
         return None
-
-    def _mover_para_frente(self):
-        if self.controller:
-            self.controller._trazer_para_frente()
-
-    def _mover_para_tras(self):
-        if self.controller:
-            self.controller._enviar_para_tras()
 
     def _agrupar_figuras(self):
         if self.controller:

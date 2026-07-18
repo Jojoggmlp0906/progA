@@ -139,6 +139,7 @@ class EstadoSelecao(EstadoDesenho):
         shift_pressionado = (event.state & 0x0001) != 0
 
         if figura:
+            self.controller.figura_selecionada = figura
             if shift_pressionado:
                 if figura in self.controller.figuras_selecionadas:
                     self.controller.figuras_selecionadas.remove(figura)
@@ -148,6 +149,7 @@ class EstadoSelecao(EstadoDesenho):
                 if figura not in self.controller.figuras_selecionadas:
                     self.controller.figuras_selecionadas = {figura}
         else:
+            self.controller.figura_selecionada = None
             if not shift_pressionado:
                 self.controller.figuras_selecionadas.clear()
 

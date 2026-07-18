@@ -211,6 +211,22 @@ class FormaComposta(Figura):
         for figura in self.figuras:
             figura.mover(dx, dy)
 
+    def aplicar_cor_borda(self, cor):
+        self.cor_borda = cor
+        for figura in self.figuras:
+            if hasattr(figura, "aplicar_cor_borda"):
+                figura.aplicar_cor_borda(cor)
+            elif hasattr(figura, "cor_borda"):
+                figura.cor_borda = cor
+
+    def aplicar_cor_preenchimento(self, cor):
+        self.cor_preenchimento = cor
+        for figura in self.figuras:
+            if hasattr(figura, "aplicar_cor_preenchimento"):
+                figura.aplicar_cor_preenchimento(cor)
+            elif hasattr(figura, "cor_preenchimento"):
+                figura.cor_preenchimento = cor
+
     def obter_limites(self):
         if not self.figuras:
             return (0, 0, 0, 0)
@@ -241,22 +257,44 @@ class DesenhoModel:
         if figura in self.figuras:
             self.figuras.remove(figura)
 
-    def trazer_para_frente(self, figura):
-        if figura in self.figuras:
-            self.figuras.remove(figura)
-            self.figuras.append(figura)
+    def _normalizar_figuras(self, figuras):
+        if figuras is None:
+            return []
 
-    def enviar_para_tras(self, figura):
-        if figura in self.figuras:
-            self.figuras.remove(figura)
-            self.figuras.insert(0, figura)
+        if isinstance(figuras, (list, tuple, set)):
+            figuras_selecionadas = set(figuras)
+            return [self.figuras in figuras_selecionadas]
+
+        else:
+            return [figuras]
+
+    def trazer_para_frente(self, figuras):
+        figuras_a_mover = self._normalizar_figuras(figuras)
+        if not figuras_a_mover:
+            return
+
+        restantes = [figura for figura in self.figuras if figura not in figuras_a_mover]
+        self.figuras = restantes + figuras_a_mover
+
+    def enviar_para_tras(self, figuras):
+        figuras_a_mover = self._normalizar_figuras(figuras)
+        if not figuras_a_mover:
+            return
+
+        restantes = [figura for figura in self.figuras if figura not in figuras_a_mover]
+        self.figuras = figuras_a_mover + restantes
 
     def obter_figuras(self):
         return self.figuras
 
     def criar_forma_composta(self, figuras):
-        figuras_validas = [figura for figura in figuras if figura in self.figuras]
-        if not figuras_validas:
+        figuras_validas = []
+        if isinstance(figuras, (list, tuple, set)):
+            figuras_validas = [figura for figura in figuras if figura in self.figuras]
+        elif figuras in self.figuras:
+            figuras_validas = [figuras]
+
+        if len(figuras_validas) < 2:
             return None
 
         for figura in figuras_validas:
@@ -271,13 +309,3 @@ class DesenhoModel:
             if figura.contem_ponto(x, y):
                 return figura
         return None
-
-    def trazer_para_frente(self, figura):
-        if figura in self.figuras:
-            self.figuras.remove(figura)
-            self.figuras.append(figura)
-
-    def enviar_para_tras(self, figura):
-        if figura in self.figuras:
-            self.figuras.remove(figura)
-            self.figuras.insert(0, figura)
