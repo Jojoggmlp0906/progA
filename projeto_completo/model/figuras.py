@@ -110,27 +110,37 @@ class Poligono(Figura):
 
 
 class PoligonoRegular(Figura):
-    def __init__(self, x1, y1, x2, y2, lados=5, cor_borda="black", cor_preenchimento=""):
+    def __init__(self, x1, y1, x2, y2, lados, cor_borda="black", cor_preenchimento=""):
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
-        self.lados = max(3, lados)
+        self.lados = lados
         self.cor_borda = cor_borda
         self.cor_preenchimento = cor_preenchimento
+    def set_lados(self,novos_lados):
+        " Vai atualizar a propriedade do modelo."
+        if novos_lados >= 3:
+            self.lados = novos_lados
+    def calcular_vertices(self):
 
-    def _vertices(self):
-        raio = math.hypot(self.x2 - self.x1, self.y2 - self.y1)
+        cx, cy = self.x1, self.y1
+        
+        raio = math.sqrt(self.x2 - cx)**2 + (self.y2 - cy)**2)
+        
         if raio == 0:
-            return []
-        angulo_inicial = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
-        return [
-            (
-                self.x1 + raio * math.cos(angulo_inicial + 2 * math.pi * i / self.lados),
-                self.y1 + raio * math.sin(angulo_inicial + 2 * math.pi * i / self.lados),
-            )
-            for i in range(self.lados)
-        ]
+            raio = 1.0
+        angulo_inicial = math.atan2(self.y2 - cy, self.x2 - cx)
+        vertices = []
+        for i in range(self.lados):
+            angulo = angulo_inicial + (2*math.pi*i / self.lados)
+            
+            x = cx + raio * math.cos(angulo_inicial + 2 * math.pi * i / self.lados),
+            y = cy + raio * math.sin(angulo_inicial + 2 * math.pi * i / self.lados),
+
+            vertices.append(x)
+            vertices.append(y)
+       return vertices
 
     def renderizar(self, canvas):
         vertices = self._vertices()
