@@ -44,8 +44,10 @@ class DesenhoController:
 
         self.view.bind("<Delete>", self._deletar_figuras)
         self.view.bind("<BackSpace>", self._deletar_figuras)
-        self.view.bind("<Control-Right>", self._trazer_para_frente)
-        self.view.bind("<Control-Left>", self._enviar_para_tras)
+        self.view.bind("<Shift-Right>", self._trazer_para_frente)
+        self.view.bind("<Shift-Left>", self._enviar_para_tras)
+        self.view.bind("<Shift-Up>", self._passo_para_frente)
+        self.view.bind("<Shift-Down>", self._passo_para_tras)
 
     def _ao_pressionar(self, event):
         estado = self._obter_estado_atual()
@@ -57,10 +59,10 @@ class DesenhoController:
                 if retorno not in self.model.obter_figuras():
                     self.model.adicionar_figura(self.figura_atual)
                 self.figura_selecionada = self.figura_atual
-                
-            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
-            self.model.adicionar_figura(self.figura_atual)
-            self.figuras_selecionadas = {self.figura_atual}
+                self.figuras_selecionadas = {self.figura_atual}
+            else:
+                self.figura_atual = None
+
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _ao_arrastar(self, event):
@@ -105,42 +107,70 @@ class DesenhoController:
                 self.figura_atual = None
                 self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
 
+    def _obter_figuras_selecionadas_em_ordem(self):
+        figuras_ordenadas = list(filter(self.figuras_selecionadas.__contains__, self.model.obter_figuras()))
+        return figuras_ordenadas
+    
     def _trazer_para_frente(self, event=None):
-        if self.figuras_selecionadas:
-            for figura in self.figuras_selecionadas:
-                self.model.trazer_para_frente(figura)
+        figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
+        if figuras_ordenadas:
+            self.model.trazer_para_frente(figuras_ordenadas)
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _enviar_para_tras(self, event=None):
-        if self.figuras_selecionadas:
-            for figura in list(self.figuras_selecionadas):
-                self.model.enviar_para_tras(figura)
+        figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
+        if figuras_ordenadas:
+            self.model.enviar_para_tras(figuras_ordenadas)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
+
+    def _passo_para_frente(self, event=None):
+        figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
+        if figuras_ordenadas:
+            self.model.trazer_um_passo_para_frente(figuras_ordenadas)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
+
+    def _passo_para_tras(self, event=None):
+        figuras_ordenadas = self._obter_figuras_selecionadas_em_ordem()
+        if figuras_ordenadas:
+            self.model.enviar_um_passo_para_tras(figuras_ordenadas)
             self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _agrupar_figuras(self, event=None):
-        figuras = [figura for figura in self.model.obter_figuras() if not isinstance(figura, FormaComposta)]
-        if len(figuras) < 2:
+        figuras_selecionadas = self._obter_figuras_selecionadas_em_ordem()
+        if len(figuras_selecionadas) < 2:
             return
 
-        forma_composta = self.model.criar_forma_composta(figuras)
+        forma_composta = self.model.criar_forma_composta(figuras_selecionadas)
         if forma_composta:
+            self.figuras_selecionadas = {forma_composta}
             self.figura_selecionada = forma_composta
-            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+            self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
             print("Figuras agrupadas!")
 
     def _selecionar_cor_borda(self, cor):
         self.view.cor_borda = cor
         for figura in self.figuras_selecionadas:
-            figura.cor_borda = cor
+            if hasattr(figura, "aplicar_cor_borda"):
+                figura.aplicar_cor_borda(cor)
+            elif hasattr(figura, "cor_borda"):
+                figura.cor_borda = cor
+        if self.figuras_selecionadas:
+            self.figura_selecionada = next(iter(self.figuras_selecionadas))
         self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
 
     def _selecionar_cor_preenchimento(self, cor):
-        self.view.cor_preenchimento = cor if cor else ""
-        if self.figura_selecionada is not None and hasattr(self.figura_selecionada, "cor_preenchimento"):
-            self.figura_selecionada.cor_preenchimento = cor if cor else ""
-            self.view.atualizar_tela(self.model.obter_figuras(), self.figura_selecionada)
+        cor_final = cor if cor else ""
+        self.view.cor_preenchimento = cor_final
+        for figura in self.figuras_selecionadas:
+            if hasattr(figura, "aplicar_cor_preenchimento"):
+                figura.aplicar_cor_preenchimento(cor_final)
+            elif hasattr(figura, "cor_preenchimento"):
+                figura.cor_preenchimento = cor_final
+        if self.figuras_selecionadas:
+            self.figura_selecionada = next(iter(self.figuras_selecionadas))
+        self.view.atualizar_tela(self.model.obter_figuras(), self.figuras_selecionadas)
             
-    def executar(self):
+    def executar(self, cor):
         cor_final = cor if cor else ""
         self.view.cor_preenchimento = cor_final
         for figura in self.figuras_selecionadas:
