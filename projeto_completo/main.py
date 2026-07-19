@@ -44,10 +44,10 @@ class DesenhoController:
 
         self.view.bind("<Delete>", self._deletar_figuras)
         self.view.bind("<BackSpace>", self._deletar_figuras)
-        self.view.bind("<Shift-Up>", self._trazer_para_frente)
-        self.view.bind("<Shift-Down>", self._enviar_para_tras)
-        self.view.bind("<Shift-Right>", self._passo_para_frente)
-        self.view.bind("<Shift-Left>", self._passo_para_tras)
+        self.view.bind("<Shift-Right>", self._trazer_para_frente)
+        self.view.bind("<Shift-Left>", self._enviar_para_tras)
+        self.view.bind("<Shift-Up>", self._passo_para_frente)
+        self.view.bind("<Shift-Down>", self._passo_para_tras)
 
     def _ao_pressionar(self, event):
         estado = self._obter_estado_atual()
