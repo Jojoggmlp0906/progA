@@ -129,8 +129,9 @@ class EstadoPoligonoRegular(EstadoDesenho):
             # Se o usuário cancelar, não faz nada
             if lados is None:
                 return None
-                
+            
             self.em_construcao = True
+            event.widget.bind("<MouseWheel>", lambda e: self.mudar_lados_scroll(e, event.widget))
             # Cria o polígono no ponto clicado
             return PoligonoRegular(event.x, event.y, event.x, event.y, lados, cor_borda, cor_preenchimento)
         
@@ -138,6 +139,7 @@ class EstadoPoligonoRegular(EstadoDesenho):
         else:
             self.em_construcao = False
             # Retorna None para o Controller entender que a figura foi finalizada
+            event.widget.unbind("<MouseWheel>")
             return None
 
     def arrastar(self, event, figura_atual):
@@ -145,7 +147,16 @@ class EstadoPoligonoRegular(EstadoDesenho):
         if figura_atual and isinstance(figura_atual, PoligonoRegular):
             figura_atual.x2 = event.x
             figura_atual.y2 = event.y
-
+            
+   def mudar_lados_scroll(self, event, canvas):
+       "Captura o scrooll do mouse para aumentar ou diminuir os lados."
+       figura_atual = canvas.master.controller.figura_atual
+       if figura_atual and isinstance(figura_atual, PoligonoRegular):
+          if event.delta > 0:
+              figura_atual.set_lados(figura_atual.lados + 1)
+          elif event.delta < 0 and figura_atual.lados > 3:
+              figura_atual.set_lados(figura_atual.lados - 1)
+              
     def soltar(self, event, figura_atual):
         # Não faz nada ao soltar o botão no primeiro clique
         pass
