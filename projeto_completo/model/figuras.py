@@ -122,11 +122,12 @@ class PoligonoRegular(Figura):
         " Vai atualizar a propriedade do modelo."
         if novos_lados >= 3:
             self.lados = novos_lados
+            
     def calcular_vertices(self):
 
         cx, cy = self.x1, self.y1
         
-        raio = math.sqrt(self.x2 - cx)**2 + (self.y2 - cy)**2)
+        raio = math.sqrt((self.x2 - cx)**2 + (self.y2 - cy)**2)
         
         if raio == 0:
             raio = 1.0
@@ -135,15 +136,15 @@ class PoligonoRegular(Figura):
         for i in range(self.lados):
             angulo = angulo_inicial + (2*math.pi*i / self.lados)
             
-            x = cx + raio * math.cos(angulo_inicial + 2 * math.pi * i / self.lados),
-            y = cy + raio * math.sin(angulo_inicial + 2 * math.pi * i / self.lados),
+            x = cx + raio * math.cos(angulo + 2 * math.pi * i / self.lados),
+            y = cy + raio * math.sin(angulo + 2 * math.pi * i / self.lados),
 
-            vertices.append(x)
-            vertices.append(y)
-       return vertices
+            vertices.append(x, y)
+
+        return vertices
 
     def renderizar(self, canvas):
-        vertices = self._vertices()
+        vertices = self._calcular_vertices()
         if vertices:
             pontos_planos = [coord for pt in vertices for coord in pt]
             return canvas.create_polygon(pontos_planos, outline=self.cor_borda, fill=self.cor_preenchimento)
@@ -158,7 +159,7 @@ class PoligonoRegular(Figura):
         self.y2 += dy
 
     def obter_limites(self):
-        vertices = self._vertices()
+        vertices = self._calcular_vertices()
         if not vertices:
             return self.x1, self.y1, self.x1, self.y1
         xs = [x for x, _ in vertices]
