@@ -132,12 +132,13 @@ class PoligonoRegular(Figura):
         if raio == 0:
             raio = 1.0
         angulo_inicial = math.atan2(self.y2 - cy, self.x2 - cx)
+        
         vertices = []
         for i in range(self.lados):
             angulo = angulo_inicial + (2*math.pi*i / self.lados)
             
-            x = cx + raio * math.cos(angulo + 2 * math.pi * i / self.lados),
-            y = cy + raio * math.sin(angulo + 2 * math.pi * i / self.lados),
+            x = cx + raio * math.cos(angulo)
+            y = cy + raio * math.sin(angulo)
 
             vertices.append(x, y)
 
